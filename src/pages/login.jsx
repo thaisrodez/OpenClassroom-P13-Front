@@ -1,6 +1,8 @@
 import '../styles/pages/login.css';
+import { useDispatch } from 'react-redux';
 
 export function Login() {
+  const dispatch = useDispatch();
   return (
     <main className="main bg-dark">
       <section className="sign-in-content">
@@ -9,11 +11,29 @@ export function Login() {
         <form>
           <div className="input-wrapper">
             <label htmlFor="username">Username</label>
-            <input type="text" id="username" />
+            <input
+              type="text"
+              id="username"
+              onChange={(e) => {
+                dispatch({
+                  type: 'fillLoginUsername',
+                  payload: { username: e.target.value },
+                });
+              }}
+            />
           </div>
           <div className="input-wrapper">
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" />
+            <input
+              type="password"
+              id="password"
+              onChange={(e) => {
+                dispatch({
+                  type: 'fillLoginPassword',
+                  payload: { password: e.target.value },
+                });
+              }}
+            />
           </div>
           <div className="input-remember">
             <input type="checkbox" id="remember-me" />
