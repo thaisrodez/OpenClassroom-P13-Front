@@ -1,44 +1,66 @@
-import { createStore } from 'redux';
-import { produce } from 'immer';
+import { configureStore, createSlice } from '@reduxjs/toolkit';
 
-// backend retourne un token à la connexion
-// token à mettre dans le local storage, et à mettre dans le header des requêtes.
-
-// reducer user et reducer loggin
-
-const initialState = {
-  user: { status: 'void' },
-  token: null,
-  loggedIn: false,
-  logginForm: { username: null, password: null },
-};
-
-// actions
-export const fillLoginUsername = (username) => ({
-  type: 'fillLoginUsername',
-  payload: { username: username },
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    // request status
+    status: 'void',
+    // data return by the request
+    data: null,
+    // error if request failed
+    error: null,
+  },
+  reducers: {
+    fetchingUser: (state, action) => {
+      if (state.status === 'void') {
+        // on passe en pending
+        state.status = 'pending';
+        return;
+      }
+      // si le statut est rejected
+      if (state.status === 'rejected') {
+        // on supprime l'erreur et on passe en pending
+        state.error = null;
+        state.status = 'pending';
+        return;
+      }
+      // si le statut est resolved
+      if (state.status === 'resolved') {
+        // on passe en updating (requête en cours mais des données sont déjà présentent)
+        state.status = 'updating';
+        return;
+      }
+      // sinon l'action est ignorée
+      return;
+    },
+    resolvedUser: (state, action) => {
+      if (state.status === 'pending' || state.status === 'updating') {
+        // on passe en resolved et on sauvegarde les données
+        state.data = action.payload;
+        state.status = 'resolved';
+        return;
+      }
+      // sinon l'action est ignorée
+      return;
+    },
+    rejectedUser: (state, actionstate, action) => {
+      if (state.status === 'pending' || state.status === 'updating') {
+        // on passe en rejected, on sauvegarde l'erreur et on supprime les données
+        state.status = 'rejected';
+        state.error = action.payload;
+        state.data = null;
+        return;
+      }
+      // sinon l'action est ignorée
+      return;
+    },
+  },
 });
 
-export const fillLoginPassword = (username, password) => ({
-  type: 'fillLoginPassword',
-  payload: { password: password },
+export const { fetchingUser, resolvedUser, rejectedUser } = userSlice.actions;
+
+export const store = configureStore({
+  reducer: {
+    user: userSlice.reducer,
+  },
 });
-
-function reducer(state = initialState, action) {
-  if (action.type === 'fillLoginUsername') {
-    return produce(state, (draft) => {
-      draft.logginForm.username = action.payload.username;
-    });
-  }
-  if (action.type === 'fillLoginPassword') {
-    return produce(state, (draft) => {
-      draft.logginForm.password = action.payload.password;
-    });
-  }
-  return state;
-}
-
-const reduxDevtools =
-  window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__();
-
-export const store = createStore(reducer, reduxDevtools);
