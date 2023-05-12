@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
 
 export function UserHeader({ setIsFormDisplayed }) {
+  const user = useSelector((state) => state.user.data);
   return (
     <div className="header">
       <h1>
         Welcome back
         <br />
-        Tony Jarvis!
+        {user ? `${user.firstName} ${user.lastName}` : ''}!
       </h1>
       <button className="edit-button" onClick={() => setIsFormDisplayed(true)}>
         Edit Name
