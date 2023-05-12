@@ -1,11 +1,11 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = 'http://localhost:3001';
+axios.defaults.baseURL = 'http://localhost:3001/api/v1';
 
-const login = async ({ username, password }) => {
+const login = async ({ email, password }) => {
   try {
     const response = await axios.post('/user/login', {
-      username,
+      email,
       password,
     });
     if (response.data && response.data.token) {

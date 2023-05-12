@@ -7,7 +7,7 @@ export function Login() {
   const dispatch = useDispatch();
   const store = useStore();
 
-  const [form, setForm] = useState({ username: '', password: '' });
+  const [form, setForm] = useState({ email: '', password: '' });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,7 +31,6 @@ export function Login() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(value);
     const _form = { ...form };
     _form[name] = value;
     setForm(_form);
@@ -44,11 +43,11 @@ export function Login() {
         <h1>Sign In</h1>
         <form onSubmit={handleSubmit}>
           <div className="input-wrapper">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="email">Username</label>
             <input
               type="text"
-              id="username"
-              name="username"
+              id="email"
+              name="email"
               value={form.username}
               onChange={handleChange}
             />
