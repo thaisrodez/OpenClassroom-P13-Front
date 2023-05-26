@@ -9,15 +9,19 @@ export function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+  });
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     // authentification
     try {
-      await Auth.login(form);
-      const user = await Auth.me();
-      dispatch(setUser(user.data.body));
+      const token = await Auth.login(form);
+      const user = await Auth.me(token, rememberMe);
+      dispatch(setUser(user));
       navigate('/');
     } catch (error) {
       console.log('form login error', error);
@@ -59,7 +63,13 @@ export function Login() {
             />
           </div>
           <div className="input-remember">
-            <input type="checkbox" id="remember-me" />
+            <input
+              type="checkbox"
+              id="remember-me"
+              name="rememberMe"
+              value={rememberMe}
+              onChange={() => setRememberMe(!rememberMe)}
+            />
             <label htmlFor="remember-me">Remember me</label>
           </div>
           <button className="sign-in-button">Sign In</button>

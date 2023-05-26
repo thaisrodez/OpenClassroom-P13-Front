@@ -1,6 +1,6 @@
-export default function authHeader() {
-  const token = JSON.parse(localStorage.getItem('userArgentBank'));
-
+export default function authHeader(_token) {
+  const token =
+    _token || JSON.parse(localStorage.getItem('userArgentBank')).token;
   if (token) {
     return {
       'Content-Type': 'application/json',

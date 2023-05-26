@@ -10,28 +10,37 @@ const login = async ({ email, password }) => {
       password,
     });
     if (response.data && response.data.body.token) {
-      localStorage.setItem(
-        'userArgentBank',
-        JSON.stringify(response.data.body.token)
-      );
+      return response.data.body.token;
     }
-    return response;
+    return null;
   } catch (error) {
     console.log('login error ===', error);
     return error;
   }
 };
 
-const me = async () => {
+const me = async (token, rememberMe) => {
   try {
     const response = await axios.post(
       '/user/profile',
       {},
       {
-        headers: authHeader(),
+        headers: authHeader(token),
       }
     );
-    return response;
+    if (token) {
+      localStorage.setItem(
+        'userArgentBank',
+        JSON.stringify({
+          token,
+          firstName: response.data.body.firstName,
+          lastName: response.data.body.lastName,
+          id: response.data.body.id,
+          rememberMe,
+        })
+      );
+    }
+    return response.data.body;
   } catch (error) {
     return error;
   }
@@ -46,6 +55,20 @@ const updateUser = async ({ firstName, lastName }) => {
         headers: authHeader(),
       }
     );
+    const token = JSON.parse(localStorage.getItem('userArgentBank')).token;
+    const rememberMe = JSON.parse(
+      localStorage.getItem('userArgentBank').rememberMe
+    );
+    localStorage.setItem(
+      'userArgentBank',
+      JSON.stringify({
+        token,
+        firstName: response.data.body.firstName,
+        lastName: response.data.body.lastName,
+        id: response.data.body.id,
+        rememberMe,
+      })
+    );
     return response;
   } catch (error) {
     return error;
@@ -53,7 +76,7 @@ const updateUser = async ({ firstName, lastName }) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('userArgentBank');
+  localStorage.clear();
 };
 
 const Auth = {
