@@ -37,6 +37,21 @@ const me = async () => {
   }
 };
 
+const updateUser = async ({ firstName, lastName }) => {
+  try {
+    const response = await axios.put(
+      '/user/profile',
+      { firstName, lastName },
+      {
+        headers: authHeader(),
+      }
+    );
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
 const logout = () => {
   localStorage.removeItem('userArgentBank');
 };
@@ -44,6 +59,7 @@ const logout = () => {
 const Auth = {
   login,
   me,
+  updateUser,
   logout,
 };
 export default Auth;

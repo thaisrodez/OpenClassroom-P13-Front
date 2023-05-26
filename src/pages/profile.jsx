@@ -2,6 +2,8 @@ import { UserHeader } from '../components/userHeader';
 import { UserForm } from '../components/userForm';
 import '../styles/pages/profile.css';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const userData = [
   {
@@ -26,28 +28,42 @@ const userData = [
 
 export function Profile() {
   const [isFormDisplayed, setIsFormDisplayed] = useState(false);
+  const userId = useSelector((state) => state.user.id);
 
   return (
     <main className="main bg-dark">
-      {isFormDisplayed ? (
-        <UserForm setIsFormDisplayed={setIsFormDisplayed} />
-      ) : (
-        <UserHeader setIsFormDisplayed={setIsFormDisplayed} />
-      )}
+      {userId ? (
+        <>
+          {isFormDisplayed ? (
+            <UserForm setIsFormDisplayed={setIsFormDisplayed} />
+          ) : (
+            <UserHeader setIsFormDisplayed={setIsFormDisplayed} />
+          )}
 
-      <h2 className="sr-only">Accounts</h2>
-      {userData.map((account) => (
-        <section key={account.id} className="account">
-          <div className="account-content-wrapper">
-            <h3 className="account-title">{account.title}</h3>
-            <p className="account-amount">{account.amount}</p>
-            <p className="account-amount-description">{account.description}</p>
-          </div>
-          <div className="account-content-wrapper cta">
-            <button className="transaction-button">View transactions</button>
-          </div>
-        </section>
-      ))}
+          <h2 className="sr-only">Accounts</h2>
+          {userData.map((account) => (
+            <section key={account.id} className="account">
+              <div className="account-content-wrapper">
+                <h3 className="account-title">{account.title}</h3>
+                <p className="account-amount">{account.amount}</p>
+                <p className="account-amount-description">
+                  {account.description}
+                </p>
+              </div>
+              <div className="account-content-wrapper cta">
+                <button className="transaction-button">
+                  View transactions
+                </button>
+              </div>
+            </section>
+          ))}
+        </>
+      ) : (
+        <div className="no-profile">
+          <p>You are not logged in</p>
+          <Link to="/Login">Sign In</Link>
+        </div>
+      )}
     </main>
   );
 }

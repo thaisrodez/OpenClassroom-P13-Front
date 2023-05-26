@@ -1,9 +1,12 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import Auth from '../services/auth';
+import { setUser } from '../features/user';
 
 export function UserForm({ setIsFormDisplayed }) {
-  const user = useSelector((state) => state.user.data);
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
   const [formInputs, setFormInputs] = useState({
     firstName: user.firstName,
     lastName: user.lastName,
@@ -11,6 +14,14 @@ export function UserForm({ setIsFormDisplayed }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsFormDisplayed(false);
+    try {
+      const response = await Auth.updateUser(formInputs);
+      dispatch(setUser(response.data.body));
+    } catch (error) {
+      console.log('error updating user infos', error);
+      return error;
+    }
   };
 
   const handleChange = (e) => {
@@ -23,7 +34,7 @@ export function UserForm({ setIsFormDisplayed }) {
   return (
     <div className="header">
       <h1>Welcome back</h1>
-      <form>
+      <form onSubmit={handleSubmit}>
         <div className="edit-form">
           <label htmlFor="firstname" className="sr-only">
             Firstname
@@ -47,8 +58,10 @@ export function UserForm({ setIsFormDisplayed }) {
           />
         </div>
         <div className="edit-form">
-          <button onClick={() => setIsFormDisplayed(false)}>Save</button>
-          <button onClick={() => setIsFormDisplayed(false)}>Cancel</button>
+          <button type="submit">Save</button>
+          <button type="button" onClick={() => setIsFormDisplayed(false)}>
+            Cancel
+          </button>
         </div>
       </form>
     </div>
