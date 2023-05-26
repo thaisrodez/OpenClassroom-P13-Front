@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import '../styles/pages/login.css';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import Auth from '../services/auth';
+import { setUser } from '../features/user';
+import { useNavigate } from 'react-router-dom';
 
 export function Login() {
   const dispatch = useDispatch();
-  const store = useStore();
+  const navigate = useNavigate();
 
   const [form, setForm] = useState({ email: '', password: '' });
 
@@ -13,20 +15,14 @@ export function Login() {
     e.preventDefault();
     // authentification
     try {
-      const response = await Auth.login(form);
-      console.log(response);
+      await Auth.login(form);
+      const user = await Auth.me();
+      dispatch(setUser(user.data.body));
+      navigate('/');
     } catch (error) {
       console.log('form login error', error);
+      return error;
     }
-    // const isUserLoggedIn = store.getState().loggedIn;
-    // if (isUserLoggedIn) return;
-    // dispatch({
-    //   type: 'loginUser',
-    //   payload: {
-    //     user: null,
-    //     token: null,
-    //   },
-    // });
   };
 
   const handleChange = (e) => {

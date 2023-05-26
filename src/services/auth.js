@@ -1,4 +1,5 @@
 import axios from 'axios';
+import authHeader from './authHeader';
 
 axios.defaults.baseURL = 'http://localhost:3001/api/v1';
 
@@ -8,15 +9,30 @@ const login = async ({ email, password }) => {
       email,
       password,
     });
-    if (response.data && response.data.token) {
+    if (response.data && response.data.body.token) {
       localStorage.setItem(
         'userArgentBank',
-        JSON.stringify(response.data.token)
+        JSON.stringify(response.data.body.token)
       );
     }
     return response;
   } catch (error) {
     console.log('login error ===', error);
+    return error;
+  }
+};
+
+const me = async () => {
+  try {
+    const response = await axios.post(
+      '/user/profile',
+      {},
+      {
+        headers: authHeader(),
+      }
+    );
+    return response;
+  } catch (error) {
     return error;
   }
 };
@@ -27,6 +43,7 @@ const logout = () => {
 
 const Auth = {
   login,
+  me,
   logout,
 };
 export default Auth;

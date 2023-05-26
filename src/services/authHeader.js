@@ -1,8 +1,11 @@
 export default function authHeader() {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const token = JSON.parse(localStorage.getItem('userArgentBank'));
 
-  if (user && user.accessToken) {
-    return { Authorization: 'Bearer ' + user.accessToken };
+  if (token) {
+    return {
+      'Content-Type': 'application/json',
+      authorization: `Bearer ${token} `,
+    };
   } else {
     console.log('no authorisation header');
     return {};
