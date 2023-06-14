@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../styles/pages/login.css';
 import { useDispatch } from 'react-redux';
 import Auth from '../services/auth';
-import { setUser } from '../features/user';
+import { setToken, setUser } from '../features/user';
 import { useNavigate } from 'react-router-dom';
 
 export function Login() {
@@ -20,6 +20,7 @@ export function Login() {
     // authentification
     try {
       const token = await Auth.login(form);
+      dispatch(setToken(token));
       const user = await Auth.me(token, rememberMe);
       dispatch(setUser(user));
       navigate('/');

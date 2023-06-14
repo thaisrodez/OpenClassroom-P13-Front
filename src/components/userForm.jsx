@@ -16,7 +16,7 @@ export function UserForm({ setIsFormDisplayed }) {
     e.preventDefault();
     setIsFormDisplayed(false);
     try {
-      const response = await Auth.updateUser(formInputs);
+      const response = await Auth.updateUser(user.token, formInputs);
       dispatch(setUser(response.data.body));
     } catch (error) {
       console.log('error updating user infos', error);

@@ -6,8 +6,12 @@ export const userSlice = createSlice({
     id: '',
     firstName: '',
     lastName: '',
+    token: '',
   },
   reducers: {
+    setToken(state, action) {
+      state.token = action.payload;
+    },
     setUser(state, action) {
       const { id, firstName, lastName } = action.payload;
       state.id = id;
@@ -18,8 +22,9 @@ export const userSlice = createSlice({
       state.id = '';
       state.firstName = '';
       state.lastName = '';
+      state.token = '';
     },
   },
 });
 
-export const { setUser, removeUser } = userSlice.actions;
+export const { setToken, setUser, removeUser } = userSlice.actions;
