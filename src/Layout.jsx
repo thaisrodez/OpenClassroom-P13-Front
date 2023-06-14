@@ -3,17 +3,19 @@ import { Footer } from './components/footer';
 import { Outlet } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { setUser } from './features/user';
+import { setToken, setUser } from './features/user';
 
 function Layout() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const storageData = JSON.parse(localStorage.getItem('userArgentBank'));
-    if (storageData && storageData.rememberMe) {
+    let storageData =
+      localStorage.getItem('userArgentBank') ||
+      sessionStorage.getItem('userArgentBank');
+    if (storageData) {
+      storageData = JSON.parse(storageData);
       dispatch(setUser(storageData));
-    } else {
-      localStorage.clear();
+      dispatch(setToken(storageData.token));
     }
   }, []);
 

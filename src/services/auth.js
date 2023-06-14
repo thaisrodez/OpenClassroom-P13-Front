@@ -28,17 +28,17 @@ const me = async (token, rememberMe) => {
         headers: authHeader(token),
       }
     );
-    if (token) {
-      localStorage.setItem(
-        'userArgentBank',
-        JSON.stringify({
-          token,
-          firstName: response.data.body.firstName,
-          lastName: response.data.body.lastName,
-          id: response.data.body.id,
-          rememberMe,
-        })
-      );
+    let storage = {
+      rememberMe,
+      firstName: response.data.body.firstName,
+      lastName: response.data.body.lastName,
+      id: response.data.body.id,
+      token,
+    };
+    if (rememberMe) {
+      localStorage.setItem('userArgentBank', JSON.stringify(storage));
+    } else {
+      sessionStorage.setItem('userArgentBank', JSON.stringify(storage));
     }
     return response.data.body;
   } catch (error) {
@@ -46,29 +46,29 @@ const me = async (token, rememberMe) => {
   }
 };
 
-const updateUser = async ({ firstName, lastName }) => {
+const updateUser = async (token, { firstName, lastName }) => {
   try {
     const response = await axios.put(
       '/user/profile',
       { firstName, lastName },
       {
-        headers: authHeader(),
+        headers: authHeader(token),
       }
     );
-    const token = JSON.parse(localStorage.getItem('userArgentBank')).token;
-    const rememberMe = JSON.parse(
-      localStorage.getItem('userArgentBank').rememberMe
-    );
-    localStorage.setItem(
-      'userArgentBank',
-      JSON.stringify({
-        token,
-        firstName: response.data.body.firstName,
-        lastName: response.data.body.lastName,
-        id: response.data.body.id,
-        rememberMe,
-      })
-    );
+    const storage =
+      localStorage.getItem('userArgentBank') ||
+      sessionStorage.getItem('userArgentBank');
+
+    const storedData = JSON.parse(storage);
+
+    storedData.firstName = response.data.body.firstName;
+    storedData.lastName = response.data.body.lastName;
+
+    if (storedData.rememberMe) {
+      localStorage.setItem('userArgentBank', JSON.stringify(storedData));
+    } else {
+      sessionStorage.setItem('userArgentBank', JSON.stringify(storedData));
+    }
     return response;
   } catch (error) {
     return error;
@@ -76,7 +76,8 @@ const updateUser = async ({ firstName, lastName }) => {
 };
 
 const logout = () => {
-  localStorage.clear();
+  localStorage.removeItem('userArgentBank');
+  sessionStorage.removeItem('userArgentBank');
 };
 
 const Auth = {
